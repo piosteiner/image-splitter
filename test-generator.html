@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Image Generator - Battle Map Splitter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        canvas {
+            border: 2px solid #ddd;
+            margin: 20px 0;
+            max-width: 100%;
+        }
+        .info {
+            background: #e8f2ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .download-link {
+            display: inline-block;
+            background: #48bb78;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Image Generator</h1>
+        <p>Generate test battle maps with the exact dimensions expected by the Battle Map Splitter.</p>
+        
+        <div class="info">
+            <strong>📐 Choose Your Test Image:</strong><br>
+            Select the grid layout you want to test with the splitter app.
+        </div>
+
+        <button onclick="generateTestImage('2x3')">🎨 Generate 2×3 Test Map (6 tiles)</button>
+        <button onclick="generateTestImage('3x3')">🎨 Generate 3×3 Test Map (9 tiles)</button>
+        <button onclick="downloadTestImage()" id="downloadBtn" style="display: none;">💾 Download Test Image</button>
+        
+        <canvas id="testCanvas" style="display: none;"></canvas>
+        
+        <div id="result" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        let testCanvas;
+        let testCtx;
+        let currentGrid;
+
+        const gridConfigs = {
+            '2x3': {
+                rows: 2,
+                cols: 3,
+                width: 3366,
+                height: 3276,
+                totalTiles: 6,
+                sizeMM: '570 × 554 mm',
+                description: '2×3 Grid (6 tiles)'
+            },
+            '3x3': {
+                rows: 3,
+                cols: 3,
+                width: 3366,
+                height: 4911,
+                totalTiles: 9,
+                sizeMM: '570 × 831 mm',
+                description: '3×3 Grid (9 tiles)'
+            }
+        };
+
+        function generateTestImage(gridType) {
+            currentGrid = gridType;
+            const config = gridConfigs[gridType];
+            
+            // Create canvas with exact dimensions
+            testCanvas = document.getElementById('testCanvas');
+            testCtx = testCanvas.getContext('2d');
+            
+            testCanvas.width = config.width;
+            testCanvas.height = config.height;
+            testCanvas.style.display = 'block';
+            
+            // Create a fantasy battle map-style background
+            createBattleMapBackground(config);
+            
+            // Add grid overlay to show tile boundaries
+            addTileGrid(config);
+            
+            // Add labels for each tile
+            addTileLabels(config);
+            
+            // Show download button
+            document.getElementById('downloadBtn').style.display = 'inline-block';
+            
+            document.getElementById('result').innerHTML = `
+                <div class="info">
+                    ✅ <strong>Test image generated!</strong><br>
+                    Layout: ${config.description}<br>
+                    Dimensions: ${config.width} × ${config.height} pixels<br>
+                    Size: ${config.sizeMM} at 150 DPI<br>
+                    Use this image to test the Battle Map Splitter.
+                </div>
+            `;
+        }
+
+        function createBattleMapBackground(config) {
+            // Create a gradient background
+            const gradient = testCtx.createRadialGradient(
+                testCanvas.width/2, testCanvas.height/2, 0,
+                testCanvas.width/2, testCanvas.height/2, Math.max(testCanvas.width, testCanvas.height)/2
+            );
+            gradient.addColorStop(0, '#8FBC8F');
+            gradient.addColorStop(0.5, '#6B8E23');
+            gradient.addColorStop(1, '#556B2F');
+            
+            testCtx.fillStyle = gradient;
+            testCtx.fillRect(0, 0, testCanvas.width, testCanvas.height);
+            
+            // Add some texture
+            testCtx.fillStyle = 'rgba(139, 69, 19, 0.1)';
+            for (let i = 0; i < (config.height / 3276) * 1000; i++) {
+                const x = Math.random() * testCanvas.width;
+                const y = Math.random() * testCanvas.height;
+                const size = Math.random() * 10 + 2;
+                testCtx.beginPath();
+                testCtx.arc(x, y, size, 0, Math.PI * 2);
+                testCtx.fill();
+            }
+            
+            // Add some "terrain" features
+            addTerrainFeatures(config);
+        }
+
+        function addTerrainFeatures(config) {
+            // Rivers/paths
+            testCtx.strokeStyle = '#4682B4';
+            testCtx.lineWidth = 20;
+            testCtx.beginPath();
+            testCtx.moveTo(100, testCanvas.height/3);
+            testCtx.quadraticCurveTo(testCanvas.width/2, testCanvas.height/2, testCanvas.width-100, testCanvas.height*2/3);
+            testCtx.stroke();
+            
+            // Trees/forests
+            testCtx.fillStyle = '#228B22';
+            const numTrees = Math.floor((config.height / 3276) * 50);
+            for (let i = 0; i < numTrees; i++) {
+                const x = Math.random() * testCanvas.width;
+                const y = Math.random() * testCanvas.height;
+                const radius = Math.random() * 30 + 20;
+                testCtx.beginPath();
+                testCtx.arc(x, y, radius, 0, Math.PI * 2);
+                testCtx.fill();
+            }
+            
+            // Rocks/hills
+            testCtx.fillStyle = '#696969';
+            const numRocks = Math.floor((config.height / 3276) * 20);
+            for (let i = 0; i < numRocks; i++) {
+                const x = Math.random() * testCanvas.width;
+                const y = Math.random() * testCanvas.height;
+                const width = Math.random() * 80 + 40;
+                const height = Math.random() * 60 + 30;
+                testCtx.fillRect(x, y, width, height);
+            }
+        }
+
+        function addTileGrid(config) {
+            testCtx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+            testCtx.lineWidth = 4;
+            testCtx.setLineDash([10, 10]);
+            
+            // Vertical lines
+            for (let i = 1; i < config.cols; i++) {
+                const x = (testCanvas.width / config.cols) * i;
+                testCtx.beginPath();
+                testCtx.moveTo(x, 0);
+                testCtx.lineTo(x, testCanvas.height);
+                testCtx.stroke();
+            }
+            
+            // Horizontal lines
+            for (let i = 1; i < config.rows; i++) {
+                const y = (testCanvas.height / config.rows) * i;
+                testCtx.beginPath();
+                testCtx.moveTo(0, y);
+                testCtx.lineTo(testCanvas.width, y);
+                testCtx.stroke();
+            }
+            
+            testCtx.setLineDash([]);
+        }
+
+        function addTileLabels(config) {
+            const fontSize = config.rows === 2 ? 120 : 80; // Smaller font for 3x3 grid
+            testCtx.font = `bold ${fontSize}px Arial`;
+            testCtx.textAlign = 'center';
+            testCtx.textBaseline = 'middle';
+            testCtx.strokeStyle = '#FFFFFF';
+            testCtx.fillStyle = '#FF0000';
+            testCtx.lineWidth = 6;
+            
+            let tileNumber = 1;
+            for (let row = 0; row < config.rows; row++) {
+                for (let col = 0; col < config.cols; col++) {
+                    const x = (testCanvas.width / config.cols) * col + (testCanvas.width / (config.cols * 2));
+                    const y = (testCanvas.height / config.rows) * row + (testCanvas.height / (config.rows * 2));
+                    
+                    const text = `TILE ${tileNumber}`;
+                    testCtx.strokeText(text, x, y);
+                    testCtx.fillText(text, x, y);
+                    
+                    // Add dimensions info
+                    const dimFontSize = config.rows === 2 ? 60 : 40;
+                    testCtx.font = `bold ${dimFontSize}px Arial`;
+                    const dimText = '1122 × 1638 px';
+                    testCtx.strokeText(dimText, x, y + (fontSize * 0.8));
+                    testCtx.fillText(dimText, x, y + (fontSize * 0.8));
+                    
+                    testCtx.font = `bold ${fontSize}px Arial`;
+                    tileNumber++;
+                }
+            }
+            
+            // Add title
+            testCtx.font = 'bold 80px Arial';
+            testCtx.fillStyle = '#FFFFFF';
+            testCtx.strokeStyle = '#000000';
+            testCtx.lineWidth = 3;
+            const title = `TEST ${config.description.toUpperCase()} - ${config.width} × ${config.height}px`;
+            testCtx.strokeText(title, testCanvas.width/2, 80);
+            testCtx.fillText(title, testCanvas.width/2, 80);
+        }
+
+        function downloadTestImage() {
+            if (!currentGrid) return;
+            
+            const config = gridConfigs[currentGrid];
+            testCanvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `test_battle_map_${currentGrid}_${config.width}x${config.height}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 'image/png');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Map Splitter - Print Your Maps on A4</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Battle Map Splitter</h1>
+        <p>Split your large battle maps into A4-sized tiles for easy printing</p>
+    </header>
+    
+    <main class="container">
+        <!-- Grid Selection Section -->
+        <section class="grid-selection-section">
+            <h3>Choose Your Grid Layout</h3>
+            <div class="grid-options">
+                <div class="grid-option" data-grid="2x3">
+                    <div class="grid-preview">
+                        <div class="grid-visual grid-2x3">
+                            <div class="grid-cell">1</div>
+                            <div class="grid-cell">2</div>
+                            <div class="grid-cell">3</div>
+                            <div class="grid-cell">4</div>
+                            <div class="grid-cell">5</div>
+                            <div class="grid-cell">6</div>
+                        </div>
+                    </div>
+                    <div class="grid-info">
+                        <h4>2×3 Grid (6 tiles)</h4>
+                        <p><strong>Input:</strong> 3366 × 3276 px</p>
+                        <p><strong>Size:</strong> 570 × 554 mm</p>
+                        <p><strong>Perfect for:</strong> Standard battle maps</p>
+                    </div>
+                </div>
+                
+                <div class="grid-option" data-grid="3x3">
+                    <div class="grid-preview">
+                        <div class="grid-visual grid-3x3">
+                            <div class="grid-cell">1</div>
+                            <div class="grid-cell">2</div>
+                            <div class="grid-cell">3</div>
+                            <div class="grid-cell">4</div>
+                            <div class="grid-cell">5</div>
+                            <div class="grid-cell">6</div>
+                            <div class="grid-cell">7</div>
+                            <div class="grid-cell">8</div>
+                            <div class="grid-cell">9</div>
+                        </div>
+                    </div>
+                    <div class="grid-info">
+                        <h4>3×3 Grid (9 tiles)</h4>
+                        <p><strong>Input:</strong> 3366 × 4911 px</p>
+                        <p><strong>Size:</strong> 570 × 831 mm</p>
+                        <p><strong>Perfect for:</strong> Large dungeon maps</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- File Upload Section -->
+        <section class="upload-section" style="display: none;">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <div class="upload-icon">📁</div>
+                    <h3>Upload Your Battle Map</h3>
+                    <p id="uploadDescription">Upload your battle map image</p>
+                    <p>Supported formats: PNG, JPG, JPEG</p>
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                        Choose File
+                    </button>
+                    <button class="btn btn-secondary" id="backToGridBtn">← Change Grid Layout</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Preview Section -->
+        <section class="preview-section" id="previewSection" style="display: none;">
+            <h3>Preview & Split Settings</h3>
+            <div class="preview-container">
+                <div class="image-preview">
+                    <canvas id="previewCanvas"></canvas>
+                    <div class="grid-overlay" id="gridOverlay"></div>
+                </div>
+                <div class="settings-panel">
+                    <div class="image-info" id="imageInfo"></div>
+                    <div class="split-info">
+                        <h4>Split Configuration</h4>
+                        <p id="gridConfig"><strong>Grid:</strong> 2 rows × 3 columns (6 tiles)</p>
+                        <p><strong>Tile Size:</strong> 190mm × 277mm (1122 × 1638 pixels)</p>
+                        <p><strong>Margins:</strong> 1cm white border around each tile</p>
+                    </div>
+                    <div class="export-options">
+                        <h4>Export Options</h4>
+                        <label>
+                            <input type="radio" name="format" value="png" checked>
+                            PNG Images
+                        </label>
+                        <label>
+                            <input type="radio" name="format" value="pdf">
+                            PDF Files
+                        </label>
+                        <button class="btn btn-success" id="exportBtn">
+                            Export Tiles
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Export Progress -->
+        <section class="export-section" id="exportSection" style="display: none;">
+            <h3>Exporting Tiles...</h3>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0 tiles exported</div>
+            </div>
+            <div class="download-links" id="downloadLinks"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Built for printing battle maps from Procreate • Each A4 tile includes 1cm margins</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
